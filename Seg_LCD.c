@@ -226,6 +226,22 @@ void SegLCD_DisplayTime(uint8_t Value1, uint8_t Value2){//Displays 2 values sepa
 	}
 }//End SegLCD_DisplayTime
 
+void SegLCD_char(char Value,uint8_t Digit){//Sets a value from 0-F to a specified Digit, with 1 being the leftmost, 4 being the rightmost.  Will not display error is Value is outside of 0-F, but display will not update
+	int k;
+	if(Digit > 4){
+		SegLCD_DisplayError(0x01);
+	}		//Display "Err" if trying to access a digit that does not exist
+	else{
+		if(Value=='A'){LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-2)]] = (LCD_SEG_E | LCD_SEG_F | LCD_SEG_G); LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-1)]] = (LCD_SEG_A | LCD_SEG_B | LCD_SEG_C);}
+		else if(Value=='F'){LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-2)]] = (LCD_SEG_E | LCD_SEG_F | LCD_SEG_G); LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-1)]] = (LCD_SEG_A);}
+		else if(Value=='N'){LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-2)]] = (LCD_SEG_E | LCD_SEG_F); LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-1)]] = (LCD_SEG_A | LCD_SEG_B | LCD_SEG_C);}
+		else if(Value=='O'){LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-2)]] = (LCD_SEG_D | LCD_SEG_E | LCD_SEG_F); LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-1)]] = (LCD_SEG_A | LCD_SEG_B | LCD_SEG_C);}
+		else if(Value=='S'){LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-2)]] = (LCD_SEG_D | LCD_SEG_F | LCD_SEG_G); LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-1)]] = (LCD_SEG_A | LCD_SEG_C);}
+		else if(Value=='P'){LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-2)]] = (LCD_SEG_E | LCD_SEG_F | LCD_SEG_G); LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-1)]] = (LCD_SEG_A | LCD_SEG_B);}
+	}
+}//End SegLCD_Set
+
+
 void SegLCD_DisplayError(uint8_t ErrorNum){//Displays Err# on screen, where # is a value 0-F.  If ErrorNum is outside of that range, just displays Err
 	LCD->WF8B[LCD_FRONTPLANE0] = (LCD_SEG_D | LCD_SEG_E | LCD_SEG_F | LCD_SEG_G);
 	LCD->WF8B[LCD_FRONTPLANE1] = (LCD_SEG_A);
@@ -240,17 +256,14 @@ void SegLCD_DisplayError(uint8_t ErrorNum){//Displays Err# on screen, where # is
 		LCD->WF8B[LCD_FRONTPLANE6] = (LCD_CLEAR);
 		LCD->WF8B[LCD_FRONTPLANE7] = (LCD_CLEAR);
 	}
-}//End SegLCD_DisplayError
+}
 
-//SegLCD_DP1_On() defined as macro in Seg_LCD.h, Turns on leftmost decimal without disturbing rest of display
-//SegLCD_DP1_Off() defined as macro in Seg_LCD.h, Turns off leftmost decimal without disturbing rest of display
-//SegLCD_DP2_On() defined as macro in Seg_LCD.h, Turns on center decimal without disturbing rest of display
-//SegLCD_DP2_Off() defined as macro in Seg_LCD.h, Turns off center decimal without disturbing rest of display
-//SegLCD_DP3_On() defined as macro in Seg_LCD.h, Turns on rightmost decimal without disturbing rest of display
-//SegLCD_DP3_Off() defined as macro in Seg_LCD.h, Turns off rightmost decimal without disturbing rest of display
-//SegLCD_Col_On() defined as macro in Seg_LCD.h, Turns on colon without disturbing rest of display
-//SegLCD_Col_Off() defined as macro in Seg_LCD.h, Turns off colon without disturbing rest of display
+void SegLCD_Clear(void){
+	for (int Digit = 1;Digit<=4;Digit++){
+	LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-2)]] = (LCD_CLEAR);
+	LCD->WF8B[LCD_Frontplane_Pin[((2*Digit)-1)]] = (LCD_CLEAR);
+	}
+}
+//End SegLCD_DisplayError
 
-/******************************************************************/
-//						End Functions for Manipulation of LCD								//
-/******************************************************************/
+
